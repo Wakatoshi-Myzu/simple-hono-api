@@ -1,0 +1,22 @@
+# dependencies
+node_modules
+
+# production
+build
+dist
+out
+
+# next.js
+.next
+next-env.d.ts
+
+# misc
+.DS_Store
+*.pem
+
+# env files (can opt-in for committing if needed)
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo

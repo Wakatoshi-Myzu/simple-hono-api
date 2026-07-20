@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myzu First Hono API</title>
+  <style>
+    /* ===== CSS Reset & Base ===== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      min-height: 100vh;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    /* ===== Container ===== */
+    .container {
+      max-width: 820px;
+      width: 100%;
+    }
+
+    /* ===== Header ===== */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding: 2rem 0;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd86f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      color: #a0a0b8;
+      font-size: 1.05rem;
+      margin-top: 0.5rem;
+    }
+
+    .server-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.4rem 1.2rem;
+      background: rgba(76, 175, 80, 0.15);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      color: #81c784;
+    }
+
+    .server-status .dot {
+      width: 8px;
+      height: 8px;
+      background: #4caf50;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ===== Endpoint Cards ===== */
+    .endpoints {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      background: rgba(255, 255, 255, 0.10);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-method-path {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .method {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .method.get {
+      background: rgba(76, 175, 80, 0.2);
+      color: #81c784;
+      border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+
+    .path {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: #c0c0d8;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: #8888a0;
+      margin-bottom: 1rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .greet-input {
+      flex: 1;
+      max-width: 200px;
+      padding: 0.5rem 0.8rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .greet-input:focus {
+      border-color: #f5576c;
+    }
+
+    .greet-input::placeholder {
+      color: #666680;
+    }
+
+    .btn {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 25px rgba(245, 87, 108, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #c0c0d8;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .loading-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    .loading-spinner.active {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== Response Area ===== */
+    .response-area {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    .response-area.active {
+      display: block;
+    }
+
+    .response-area .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666680;
+      margin-bottom: 0.5rem;
+    }
+
+    .response-area pre {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      color: #c0c0d8;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    .response-area pre .string { color: #a5d6ff; }
+    .response-area pre .number { color: #ffd86f; }
+    .response-area pre .boolean { color: #ce93d8; }
+    .response-area pre .key { color: #80cbc4; }
+    .response-area pre .null { color: #ef9a9a; }
+
+    /* ===== Footer ===== */
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #555570;
+    }
+
+    footer a {
+      color: #8888b0;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: #f5576c;
+    }
+
+    /* ===== Swagger Banner ===== */
+    .swagger-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(156, 39, 176, 0.12) 100%);
+      border: 1px solid rgba(33, 150, 243, 0.2);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .swagger-banner:hover {
+      background: linear-gradient(135deg, rgba(33, 150, 243, 0.18) 0%, rgba(156, 39, 176, 0.18) 100%);
+      border-color: rgba(33, 150, 243, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(33, 150, 243, 0.15);
+    }
+
+    .swagger-banner-icon {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+
+    .swagger-banner-content {
+      flex: 1;
+    }
+
+    .swagger-banner-content h3 {
+      font-size: 1.05rem;
+      color: #e0e0e0;
+      margin-bottom: 0.25rem;
+    }
+
+    .swagger-banner-content p {
+      font-size: 0.85rem;
+      color: #8888a0;
+      line-height: 1.4;
+    }
+
+    .btn-swagger {
+      background: linear-gradient(135deg, #2196f3 0%, #9c27b0 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-swagger:hover {
+      box-shadow: 0 6px 25px rgba(33, 150, 243, 0.45);
+      transform: translateY(-1px);
+      color: #fff;
+    }
+
+    @media (max-width: 640px) {
+      .swagger-banner {
+        flex-direction: column;
+        text-align: center;
+      }
+      .btn-swagger {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 600px) {
+      body { padding: 1rem 0.75rem; }
+      header h1 { font-size: 1.6rem; }
+      .card { padding: 1rem; }
+      .card-actions { flex-wrap: wrap; }
+      .greet-input { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <span>Myzu Hono</span>
+      </div>
+      <h1>Hono.js API</h1>
+      <p>Hello World · Hono.js · TypeScript</p>
+      <div class="server-status">
+        <span class="dot"></span>
+        Server is running
+      </div>
+    </header>
+
+    <!-- Endpoints -->
+    <div class="endpoints">
+      <!-- Hello World -->
+      <div class="card" id="card-hello">
+        <div class="card-header">
+          <div class="card-method-path">
+            <span class="method get">GET</span>
+            <span class="path">/api/hello</span>
+          </div>
+        </div>
+        <div class="card-desc">Returns a simple hello world message</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" onclick="callHello()">
+            <span class="loading-spinner" id="spinner-hello"></span>
+            <span id="btn-text-hello">🚀 Send Request</span>
+          </button>
+          <button class="btn btn-secondary" onclick="clearResponse('hello')">✕ Clear</button>
+        </div>
+        <div class="response-area" id="response-hello">
+          <div class="label">Response</div>
+          <pre id="response-hello-content"></pre>
+        </div>
+      </div>
+
+      <!-- API Info -->
+      <div class="card" id="card-info">
+        <div class="card-header">
+          <div class="card-method-path">
+            <span class="method get">GET</span>
+            <span class="path">/api/info</span>
+          </div>
+        </div>
+        <div class="card-desc">Returns API information and available endpoints</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" onclick="callInfo()">
+            <span class="loading-spinner" id="spinner-info"></span>
+            <span id="btn-text-info">📋 Get Info</span>
+          </button>
+          <button class="btn btn-secondary" onclick="clearResponse('info')">✕ Clear</button>
+        </div>
+        <div class="response-area" id="response-info">
+          <div class="label">Response</div>
+          <pre id="response-info-content"></pre>
+        </div>
+      </div>
+
+      <!-- Greet -->
+      <div class="card" id="card-greet">
+        <div class="card-header">
+          <div class="card-method-path">
+            <span class="method get">GET</span>
+            <span class="path">/api/greet/:name</span>
+          </div>
+        </div>
+        <div class="card-desc">Returns a personalized greeting with your name</div>
+        <div class="card-actions">
+          <input type="text" class="greet-input" id="greet-name" placeholder="Enter your name..." 
+                 onkeydown="if(event.key==='Enter') callGreet()">
+          <button class="btn btn-primary" onclick="callGreet()">
+            <span class="loading-spinner" id="spinner-greet"></span>
+            <span id="btn-text-greet">👋 Greet Me</span>
+          </button>
+          <button class="btn btn-secondary" onclick="clearResponse('greet')">✕ Clear</button>
+        </div>
+        <div class="response-area" id="response-greet">
+          <div class="label">Response</div>
+          <pre id="response-greet-content"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Swagger Docs Banner -->
+    <div class="swagger-banner">
+      <div class="swagger-banner-icon">📖</div>
+      <div class="swagger-banner-content">
+        <h3>Swagger API Documentation</h3>
+        <p>Interactive docs with endpoint descriptions, request schemas, and try-it-out functionality</p>
+      </div>
+      <a href="/api/docs" target="_blank" class="btn btn-swagger">
+        Open Swagger UI →
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      Built with <a href="https://hono.dev" target="_blank">Hono.js</a> · 
+      <a href="https://hono.dev/examples/zod-openapi" target="_blank">OpenAPI</a> · 
+      <a href="https://swagger.io" target="_blank">Swagger UI</a>
+    </footer>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
